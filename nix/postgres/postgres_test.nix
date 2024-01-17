@@ -1,12 +1,14 @@
 { pkgs, config, ... }: {
   services.postgres."pg1" = {
     enable = true;
+    # dataDir = "./data1/pg1";
     listen_addresses = "127.0.0.1";
     initialScript.before = "CREATE USER bar;";
     initialScript.after = "CREATE DATABASE foo OWNER bar;";
   };
   services.postgres."pg2" = {
     enable = true;
+    # dataDir = "./data2/pg2";
     port = 5433;
     listen_addresses = "127.0.0.1";
     # INFO: pg1 creates $USER database while pg2 doesn't because `initialDatabases` is present
@@ -25,9 +27,12 @@
       command = pkgs.writeShellApplication {
         runtimeInputs = [ cfg.package pkgs.gnugrep ];
         text = ''
+          set -x
+          echo "POSTGRESQL TEST SCRIPT"
+
           echo 'SELECT version();' | psql -h 127.0.0.1
           echo 'SHOW hba_file;' | psql -h 127.0.0.1 | ${pkgs.gawk}/bin/awk 'NR==3' | grep '^ /nix/store'
-        
+
           # initialScript.before test
           echo "SELECT 1 FROM pg_roles WHERE rolname = 'bar';" | psql -h 127.0.0.1 | grep -q 1
 

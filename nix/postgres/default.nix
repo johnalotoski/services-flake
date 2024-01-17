@@ -316,6 +316,10 @@ in
                   runtimeInputs = [ config.package pkgs.coreutils ];
                   text = ''
                     set -euo pipefail
+
+                    set -x
+                    echo "MAIN PROCESS"
+
                     PGDATA=$(readlink -f "${config.dataDir}")
                     PGSOCKETDIR=$(readlink -f "${config.socketDir}")
                     export PGDATA

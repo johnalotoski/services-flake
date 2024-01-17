@@ -79,6 +79,10 @@ in
   runtimeInputs = with pkgs; [ config.package coreutils gnugrep gawk ];
   text = ''
     set -euo pipefail
+
+    set -x
+    echo "SETUP SCRIPT"
+
     # Setup postgres ENVs
     export PGDATA="${config.dataDir}"
     export PGPORT="${toString config.port}"
@@ -86,6 +90,11 @@ in
 
 
     if [[ ! -d "$PGDATA" ]]; then
+      echo "CHECKING..."
+      # mkdir -p "$PGDATA"
+      ls -la || true
+      ls -la data/ || true
+      ls -la "$PGDATA" || true
       initdb ${lib.concatStringsSep " " initdbArgs}
       POSTGRES_RUN_INITIAL_SCRIPT="true"
       echo
